@@ -165,22 +165,32 @@ class Tree:
             self._root = last_subtree._root
             self._subtrees.extend(last_subtree._subtrees)
 
+    def build_tree(self, player: str) -> None:
+        """Builds the base of our tree"""
+        self._root = player
+        self._subtrees = [Tree("Three", []), Tree("Mid-range", []), Tree("Layup", [])]
+
+    def insert_sequence(self, data: list) -> None:
+        """Mutates tree"""
+
 
 @check_contracts
-def build_decision_tree(file: str) -> Tree:
+def build_decision_tree(file: str, player: str) -> Tree:
     """Build a decision tree storing the animal data from the given file.
 
     Preconditions:
         - file is the path to a csv file in the format of the provided animals.csv
     """
     tree = Tree('', [])  # The start of a decision tree
+    tree.build_tree(player)
 
     with open(file) as csv_file:
         reader = csv.reader(csv_file)
         next(reader)  # skip the header row
 
         for row in reader:
-            ...
-            # tree.insert_sequence(row)
+            if row[19] == player:
+                ...
+                # tree.insert_sequence(row)
 
     return tree
