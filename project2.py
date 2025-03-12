@@ -1,13 +1,13 @@
 """CSC111 Project 2"""
 from __future__ import annotations
 
+import graphviz
 import csv
 from typing import Any, Optional
 
 from python_ta.contracts import check_contracts
 
 
-# @check_contracts - We are commenting this out, so it doesn't slow down the code for Part 1.2
 class Tree:
     """A recursive tree data structure.
 
@@ -166,7 +166,7 @@ class Tree:
             self._subtrees.extend(last_subtree._subtrees)
 
     def add_tree_body(self) -> None:
-        """Builds our tree"""
+        """Builds our tree. True and False values that our answered through questions"""
         if not self._subtrees:
             self._subtrees = [Tree(True, []), Tree(False, [])]
         else:
@@ -181,6 +181,38 @@ class Tree:
             for subtree in self._subtrees:
                 subtree.add_leafs()
 
+    def edit_leafs(self, data: list[str]) -> None:
+        """Mutates the leafs of our tree.
+        In our case, it is the number shots the player made or missed of a specific shot type.
+        """
+        if data[12] == '3':
+            ...
+        if data[12] == '2':
+            ...
+
+    def visualize(self, filename: str = 'tree') -> None:
+        """Visualize this tree using Graphviz."""
+        dot = graphviz.Digraph()
+
+        def _add_nodes(tree: Tree, node_id: str) -> None:
+            if tree.is_empty():
+                return
+
+            # Add the current node
+            dot.node(node_id, str(tree._root))
+
+            # Add child nodes and edges
+            for i, subtree in enumerate(tree._subtrees):
+                child_id = f'{node_id}_{i}'
+                dot.node(child_id, str(subtree._root))
+                dot.edge(node_id, child_id)
+                _add_nodes(subtree, child_id)
+
+        _add_nodes(self, 'root')
+
+        # Save the visualization
+        dot.render(filename, format='png', cleanup=True)
+
 
 @check_contracts
 def build_decision_tree(file: str, player: str) -> Tree:
@@ -189,7 +221,7 @@ def build_decision_tree(file: str, player: str) -> Tree:
     Preconditions:
         - file is the path to a csv file in the format of the provided animals.csv
     """
-    tree = Tree(player, [Tree("Three", []), Tree("Mid-range", []), Tree("Layup", [])])  # The start of a decision tree
+    tree = Tree(player, [Tree("Three", []), Tree("Mid-range", []), Tree("Layup", [])])
     tree.add_tree_body()
     tree.add_tree_body()
     tree.add_tree_body()
@@ -201,7 +233,6 @@ def build_decision_tree(file: str, player: str) -> Tree:
 
         for row in reader:
             if row[19] == player:
-                ...
-                # tree.insert_sequence(row)
+                tree.edit_leafs(row)
 
     return tree
