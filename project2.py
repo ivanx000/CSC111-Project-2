@@ -165,13 +165,21 @@ class Tree:
             self._root = last_subtree._root
             self._subtrees.extend(last_subtree._subtrees)
 
-    def build_tree(self, player: str) -> None:
-        """Builds the base of our tree"""
-        self._root = player
-        self._subtrees = [Tree("Three", []), Tree("Mid-range", []), Tree("Layup", [])]
+    def add_tree_body(self) -> None:
+        """Builds our tree"""
+        if not self._subtrees:
+            self._subtrees = [Tree(True, []), Tree(False, [])]
+        else:
+            for subtree in self._subtrees:
+                subtree.add_tree_body()
 
-    def insert_sequence(self, data: list) -> None:
-        """Mutates tree"""
+    def add_leafs(self) -> None:
+        """Adds the leafs of our tree"""
+        if not self._subtrees:
+            self._subtrees.append(Tree(0, []))
+        else:
+            for subtree in self._subtrees:
+                subtree.add_leafs()
 
 
 @check_contracts
@@ -181,8 +189,11 @@ def build_decision_tree(file: str, player: str) -> Tree:
     Preconditions:
         - file is the path to a csv file in the format of the provided animals.csv
     """
-    tree = Tree('', [])  # The start of a decision tree
-    tree.build_tree(player)
+    tree = Tree(player, [Tree("Three", []), Tree("Mid-range", []), Tree("Layup", [])])  # The start of a decision tree
+    tree.add_tree_body()
+    tree.add_tree_body()
+    tree.add_tree_body()
+    tree.add_leafs()
 
     with open(file) as csv_file:
         reader = csv.reader(csv_file)
