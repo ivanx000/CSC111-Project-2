@@ -181,14 +181,10 @@ class Tree:
             for subtree in self._subtrees:
                 subtree.add_leafs()
 
-    def edit_leafs(self, data: list[str]) -> None:
+    def edit_leafs(self, data: list) -> None:
         """Mutates the leafs of our tree.
         In our case, it is the number shots the player made or missed of a specific shot type.
         """
-        if data[12] == '3':
-            ...
-        if data[12] == '2':
-            ...
 
     def visualize(self, filename: str = 'tree') -> None:
         """Visualize this tree using Graphviz."""
@@ -214,6 +210,10 @@ class Tree:
         dot.render(filename, format='png', cleanup=True)
 
 
+def modify_rows(row: list) -> list:
+    """Takes in a row of data and returns a list with the values that we want from the csv file"""
+
+
 @check_contracts
 def build_decision_tree(file: str, player: str) -> Tree:
     """Build a decision tree storing the animal data from the given file.
@@ -222,9 +222,7 @@ def build_decision_tree(file: str, player: str) -> Tree:
         - file is the path to a csv file in the format of the provided animals.csv
     """
     tree = Tree(player, [Tree("Three", []), Tree("Mid-range", []), Tree("Layup", [])])
-    tree.add_tree_body()
-    tree.add_tree_body()
-    tree.add_tree_body()
+    [tree.add_tree_body() for _ in range(3)]  # Runs add_tree_body() 3 times
     tree.add_leafs()
 
     with open(file) as csv_file:
@@ -232,7 +230,8 @@ def build_decision_tree(file: str, player: str) -> Tree:
         next(reader)  # skip the header row
 
         for row in reader:
-            if row[19] == player:
-                tree.edit_leafs(row)
+            if row[19] == player:  # row[19] is the player's name in the csv file
+                data = modify_rows(row)
+                tree.edit_leafs(data)
 
     return tree
