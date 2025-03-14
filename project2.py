@@ -213,6 +213,32 @@ class Tree:
 def modify_rows(row: list) -> list:
     """Takes in a row of data and returns a list with the values that we want from the csv file"""
 
+    shot_profile = []
+
+    if row[12] == '3':
+        shot_profile.append("3-pointer")
+    elif int(row[11]) >= 10:
+        shot_profile.append("Mid-Range")
+    else:
+        shot_profile.append("Layup")
+
+    if int(row[10]) >= 6:
+        shot_profile.append(True)
+    else:
+        shot_profile.append(False)
+
+    if int(row[8]) < 12:
+        shot_profile.append(True)
+    else:
+        shot_profile.append(False)
+
+    if row[13] == "made":
+        shot_profile.append(True)
+    else:
+        shot_profile.append(False)
+
+    return shot_profile
+
 
 @check_contracts
 def build_decision_tree(file: str, player: str) -> Tree:
