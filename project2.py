@@ -275,3 +275,10 @@ if __name__ == "__main__":
     })
 
     # User Input
+    player_names = {row[19] for row for }
+
+    # Project 1 Code
+    choice = input("\nEnter action: ").lower().strip()
+    while choice not in location.available_commands and choice not in menu:
+        print("That was an invalid option; try again.")
+        choice = input("\nEnter action: ").lower().strip()
