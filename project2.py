@@ -185,6 +185,14 @@ class Tree:
         """Mutates the leafs of our tree.
         In our case, it is the number shots the player made or missed of a specific shot type.
         """
+        if not data:
+            self._root += 1
+        else:
+            for subtree in self._subtrees:
+                temp = data[0]
+                if subtree._root == temp:
+                    subtree.edit_leafs(data[1:])
+                    break
 
     def visualize(self, filename: str = 'tree') -> None:
         """Visualize this tree using Graphviz."""
@@ -298,5 +306,3 @@ if __name__ == "__main__":
         name = input("\nEnter a different player: ").lower().strip()
 
     build_decision_tree("shot_logs[1].csv", name)
-
-
