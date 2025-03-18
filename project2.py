@@ -294,8 +294,8 @@ if __name__ == "__main__":
     name = input("\nChoose an NBA Player that played in the 2014-15 season: ").lower().strip()
 
     while name not in player_names:
-        print("That was an invalid option; try again.")
-        choice = input("\nEnter action: ").lower().strip()
+        print(f"{name} did not play in the 2014-15 season.")
+        name = input("\nEnter a different player: ").lower().strip()
 
     build_decision_tree("shot_logs[1].csv", name)
 
