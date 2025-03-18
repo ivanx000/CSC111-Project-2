@@ -263,19 +263,33 @@ def build_decision_tree(file: str, player: str) -> Tree:
     return tree
 
 
+def read_names(file: str) -> set:
+    """Returns a set of all the players from our data"""
+    all_player_names = set()
+
+    with open(file) as csv_file:
+        reader = csv.reader(csv_file)
+        next(reader)
+
+        for row in reader:
+            all_player_names.add(row[19])
+
+    return all_player_names
+
+
 if __name__ == "__main__":
 
     # When you are ready to check your work with python_ta, uncomment the following lines.
     # (Delete the "#" and space before each line.)
     # IMPORTANT: keep this code indented inside the "if __name__ == '__main__'" block
     import python_ta
+
     python_ta.check_all(config={
         'max-line-length': 120,
         'disable': ['R1705', 'E9998', 'E9999']
     })
 
-    # User Input
-    player_names = {row[19] for row for }
+    player_names = read_names("shot_logs[1].csv")
 
     name = input("\nChoose an NBA Player that played in the 2014-15 season: ").lower().strip()
 
@@ -284,7 +298,5 @@ if __name__ == "__main__":
         choice = input("\nEnter action: ").lower().strip()
 
     build_decision_tree("shot_logs[1].csv", name)
-
-
 
 
