@@ -277,8 +277,14 @@ if __name__ == "__main__":
     # User Input
     player_names = {row[19] for row for }
 
-    # Project 1 Code
-    choice = input("\nEnter action: ").lower().strip()
-    while choice not in location.available_commands and choice not in menu:
+    name = input("\nChoose an NBA Player that played in the 2014-15 season: ").lower().strip()
+
+    while name not in player_names:
         print("That was an invalid option; try again.")
         choice = input("\nEnter action: ").lower().strip()
+
+    build_decision_tree("shot_logs[1].csv", name)
+
+
+
+
