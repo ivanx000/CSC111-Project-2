@@ -221,31 +221,19 @@ class Tree:
 def modify_rows(row: list) -> list:
     """Takes in a row of data and returns a list with the values that we want from the csv file"""
 
-    shot_profile = []
-
     if float(row[12]) == 3:
-        shot_profile.append("3-pointer")
+        shot_type = "3-pointer"
     elif float(row[11]) >= 10:
-        shot_profile.append("Mid-Range")
+        shot_type = "Mid-Range"
     else:
-        shot_profile.append("Layup")
+        shot_type = "Layup"
 
-    if float(row[10]) >= 6:
-        shot_profile.append(True)
-    else:
-        shot_profile.append(False)
+    touch_time = (float(row[10]) >= 6)
+    dribbles = (float(row[9]) < 6)
+    make_or_miss = (row[13] == 'made')
 
-    if float(row[9]) < 6:
-        shot_profile.append(True)
-    else:
-        shot_profile.append(False)
 
-    if row[13] == "made":
-        shot_profile.append(True)
-    else:
-        shot_profile.append(False)
-
-    return shot_profile
+    return [shot_type, touch_time, dribbles, make_or_miss]
 
 
 @check_contracts
@@ -301,9 +289,9 @@ if __name__ == "__main__":
 
     player_names = read_names("shot_logs[1].csv")
 
-    name = input("\nChoose an NBA Player that played in the 2014-15 season: ").lower().strip()
+    name = input("\nChoose an NBA Player that played in the 2014-15 season (full name): ").lower().strip()
 
-    while name not in player_names:
+    while all(player_names):
         print(f"{name} did not play in the 2014-15 season.")
         name = input("\nEnter a different player: ").lower().strip()
 
