@@ -1,9 +1,9 @@
 """CSC111 Project 2"""
 from __future__ import annotations
 
-import graphviz
 import csv
 from typing import Any, Optional
+import graphviz
 
 from python_ta.contracts import check_contracts
 
@@ -256,7 +256,9 @@ def build_decision_tree(file: str, player: str) -> Tree:
         - file is the path to a csv file in the format of the provided animals.csv
     """
     tree = Tree(player, [Tree("Three", []), Tree("Mid-range", []), Tree("Layup", [])])
-    [tree.add_tree_body() for _ in range(3)]  # Runs add_tree_body() 3 times
+    tree.add_tree_body()
+    tree.add_tree_body()
+    tree.add_tree_body()
     tree.add_leafs()
 
     with open(file) as csv_file:
