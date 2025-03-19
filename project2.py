@@ -186,13 +186,12 @@ class Tree:
         In our case, it is the number shots the player made or missed of a specific shot type.
         """
         if not data:
-            self._root += 1
+            self._subtrees[0]._root += 1
         else:
             for subtree in self._subtrees:
                 temp = data[0]
                 if subtree._root == temp:
                     subtree.edit_leafs(data[1:])
-                    break
 
     def visualize(self, filename: str = 'tree') -> None:
         """Visualize this tree using Graphviz."""
@@ -243,7 +242,7 @@ def build_decision_tree(file: str, player: str) -> Tree:
     Preconditions:
         - file is the path to a csv file in the format of the provided animals.csv
     """
-    tree = Tree(player, [Tree("Three", []), Tree("Mid-range", []), Tree("Layup", [])])
+    tree = Tree(player, [Tree("3-pointer", []), Tree("Mid-Range", []), Tree("Layup", [])])
     tree.add_tree_body()
     tree.add_tree_body()
     tree.add_tree_body()
@@ -275,6 +274,20 @@ def read_names(file: str) -> set:
     return all_player_names
 
 
+def best_shot_percentage_helper(tree: Tree) -> tuple[int, int, list]:
+    """Helper function"""
+
+
+def best_shot_percentage(tree: Tree) -> tuple[float, list]:
+    """Returns a tuple of the maximum shot percentage and the path its from in the tree"""
+    shots_made, shots_missed, path = best_shot_percentage_helper(tree)
+    return (shots_made / shots_missed), path
+
+
+def identify_shot(path: list) -> str:
+    """Identifies the type of shot the player made"""
+
+
 if __name__ == "__main__":
 
     # When you are ready to check your work with python_ta, uncomment the following lines.
@@ -296,4 +309,4 @@ if __name__ == "__main__":
         name = input("\nEnter a different player: ").lower().strip()
 
     my_tree = build_decision_tree("shot_logs[1].csv", name)
-    my_tree.visualize('tree_diagram')
+    my_tree.visualize(name)
