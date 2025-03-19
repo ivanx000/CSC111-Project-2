@@ -223,19 +223,19 @@ def modify_rows(row: list) -> list:
 
     shot_profile = []
 
-    if row[12] == '3':
+    if float(row[12]) == 3:
         shot_profile.append("3-pointer")
-    elif int(row[11]) >= 10:
+    elif float(row[11]) >= 10:
         shot_profile.append("Mid-Range")
     else:
         shot_profile.append("Layup")
 
-    if int(row[10]) >= 6:
+    if float(row[10]) >= 6:
         shot_profile.append(True)
     else:
         shot_profile.append(False)
 
-    if int(row[8]) < 12:
+    if float(row[9]) < 6:
         shot_profile.append(True)
     else:
         shot_profile.append(False)
@@ -305,4 +305,5 @@ if __name__ == "__main__":
         print(f"{name} did not play in the 2014-15 season.")
         name = input("\nEnter a different player: ").lower().strip()
 
-    build_decision_tree("shot_logs[1].csv", name)
+    my_tree = build_decision_tree("shot_logs[1].csv", name)
+    my_tree.visualize('tree_diagram')
