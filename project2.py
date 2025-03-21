@@ -4,6 +4,8 @@ from __future__ import annotations
 import csv
 from typing import Any, Optional
 import graphviz
+import webbrowser
+import os
 
 from python_ta.contracts import check_contracts
 
@@ -52,118 +54,6 @@ class Tree:
         False
         """
         return self._root is None
-
-    def __len__(self) -> int:
-        """Return the number of items contained in this tree.
-
-        >>> t1 = Tree(None, [])
-        >>> len(t1)
-        0
-        >>> t2 = Tree(3, [Tree(4, []), Tree(1, [])])
-        >>> len(t2)
-        3
-        """
-        if self.is_empty():
-            return 0
-        else:
-            size = 1  # count the root
-            for subtree in self._subtrees:
-                size += subtree.__len__()  # could also write len(subtree)
-            return size
-
-    def __contains__(self, item: Any) -> bool:
-        """Return whether the given is in this tree.
-
-        >>> t = Tree(1, [Tree(2, []), Tree(5, [])])
-        >>> t.__contains__(1)
-        True
-        >>> t.__contains__(5)
-        True
-        >>> t.__contains__(4)
-        False
-        """
-        if self.is_empty():
-            return False
-        elif self._root == item:
-            return True
-        else:
-            for subtree in self._subtrees:
-                if subtree.__contains__(item):
-                    return True
-            return False
-
-    def __str__(self) -> str:
-        """Return a string representation of this tree.
-
-        For each node, its item is printed before any of its
-        descendants' items. The output is nicely indented.
-
-        You may find this method helpful for debugging.
-        """
-        return self._str_indented(0).rstrip()
-
-    def _str_indented(self, depth: int) -> str:
-        """Return an indented string representation of this tree.
-
-        The indentation level is specified by the <depth> parameter.
-        """
-        if self.is_empty():
-            return ''
-        else:
-            str_so_far = '  ' * depth + f'{self._root}\n'
-            for subtree in self._subtrees:
-                # Note that the 'depth' argument to the recursive call is
-                # modified.
-                str_so_far += subtree._str_indented(depth + 1)
-            return str_so_far
-
-    def remove(self, item: Any) -> bool:
-        """Delete *one* occurrence of the given item from this tree.
-
-        Do nothing if the item is not in this tree.
-        Return whether the given item was deleted.
-        """
-        if self.is_empty():
-            return False
-        elif self._root == item:
-            self._delete_root()  # delete the root
-            return True
-        else:
-            for subtree in self._subtrees:
-                deleted = subtree.remove(item)
-                if deleted and subtree.is_empty():
-                    # The item was deleted and the subtree is now empty.
-                    # We should remove the subtree from the list of subtrees.
-                    # Note that mutate a list while looping through it is
-                    # EXTREMELY DANGEROUS!
-                    # We are only doing it because we return immediately
-                    # afterward, and so no more loop iterations occur.
-                    self._subtrees.remove(subtree)
-                    return True
-                elif deleted:
-                    # The item was deleted, and the subtree is not empty.
-                    return True
-
-            # If the loop doesn't return early, the item was not deleted from
-            # any of the subtrees. In this case, the item does not appear
-            # in this tree.
-            return False
-
-    def _delete_root(self) -> None:
-        """Remove the root item of this tree.
-
-        Preconditions:
-            - not self.is_empty()
-        """
-        if not self._subtrees:
-            self._root = None
-        else:
-            # Strategy: Promote a subtree (the rightmost one is chosen here).
-            # Get the last subtree in this tree.
-            last_subtree = self._subtrees.pop()
-
-            self._root = last_subtree._root
-            self._subtrees.extend(last_subtree._subtrees)
 
     def add_tree_body(self) -> None:
         """Builds our tree. True and False values that our answered through questions"""
@@ -215,6 +105,7 @@ class Tree:
 
         # Save the visualization
         dot.render(filename, format='png', cleanup=True)
+        webbrowser.open(f"file://{os.path.abspath(filename)}.png")
 
     def best_shot_percentage_helper(self) -> tuple[float, list]:
         """Returns the maximum shot percentage and the path to achieve it.
