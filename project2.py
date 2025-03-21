@@ -216,6 +216,34 @@ class Tree:
         # Save the visualization
         dot.render(filename, format='png', cleanup=True)
 
+    def best_shot_percentage_helper(self) -> tuple[float, list]:
+        """Returns the maximum shot percentage and the path to achieve it.
+
+        - The percentage is calculated **pairwise** (1 & 2, 3 & 4, etc.).
+        - If multiple paths yield the same percentage, the **leftmost (odd) path is chosen**.
+        - Path is a list of node labels (e.g., ["3-pointer", True, False, True]).
+        """
+        if not self._subtrees:  # Leaf node case
+            return self._root, []  # Return the leaf value (either `made` or `miss`)
+
+        max_percentage = -1
+        best_path = []
+
+        # Process subtrees in pairs (we assume they are structured correctly)
+        for i in range(0, len(self._subtrees), 2):
+            made, path_made = self._subtrees[i].best_shot_percentage_helper()
+            miss, path_miss = self._subtrees[i + 1].best_shot_percentage_helper()
+
+            if miss != 0:  # Compute percentage
+                percentage = made / miss
+                if percentage > max_percentage:  # Update best if greater
+                    max_percentage = percentage
+                    best_path = [self._root] + path_made  # Store node label
+                elif percentage == max_percentage:  # Tie-breaker: favor leftmost
+                    best_path = [self._root] + path_made
+
+        return max_percentage, best_path
+
 
 def modify_rows(row: list) -> list:
     """Takes in a row of data and returns a list with the values that we want from the csv file"""
@@ -271,16 +299,6 @@ def read_names(file: str) -> set:
             all_player_names.add(row[19])
 
     return all_player_names
-
-
-def best_shot_percentage_helper(tree: Tree) -> tuple[int, int, list]:
-    """Helper function"""
-
-
-def best_shot_percentage(tree: Tree) -> tuple[float, list]:
-    """Returns a tuple of the maximum shot percentage and the path its from in the tree"""
-    shots_made, shots_missed, path = best_shot_percentage_helper(tree)
-    return (shots_made / shots_missed), path
 
 
 def identify_shot(path: list) -> str:
