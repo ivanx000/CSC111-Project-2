@@ -104,8 +104,13 @@ class Tree:
         _add_nodes(self, 'root')
 
         # Save the visualization
+        filepath = os.path.abspath(f"{filename}.png")
         dot.render(filename, format='png', cleanup=True)
-        webbrowser.open(f"file://{os.path.abspath(filename)}.png")
+
+        # Open in Chrome (make sure Chrome is the default or specify path)
+        # chrome_path = "C:/Program Files/Google/Chrome/Application/chrome.exe %s"  # Windows example
+        chrome_path = "open -a Google\ Chrome %s"  # Mac example
+        webbrowser.get(chrome_path).open(filepath)
 
     def best_shot_percentage_helper(self) -> tuple[float, list]:
         """Returns the maximum shot percentage and the path to achieve it.
@@ -227,7 +232,7 @@ if __name__ == "__main__":
 
     name = input("\nChoose an NBA Player that played in the 2014-15 season (full name): ").lower().strip()
 
-    while all(player_names):
+    while name not in player_names:
         print(f"{name} did not play in the 2014-15 season.")
         name = input("\nEnter a different player: ").lower().strip()
 
