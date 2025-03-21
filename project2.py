@@ -227,10 +227,9 @@ def modify_rows(row: list) -> list:
     else:
         shot_type = "Layup"
 
-    touch_time = (float(row[10]) >= 6)
+    touch_time = (float(row[10]) < 6)
     dribbles = (float(row[9]) < 6)
     make_or_miss = (row[13] == 'made')
-
 
     return [shot_type, touch_time, dribbles, make_or_miss]
 
@@ -286,6 +285,21 @@ def best_shot_percentage(tree: Tree) -> tuple[float, list]:
 
 def identify_shot(path: list) -> str:
     """Identifies the type of shot the player made"""
+
+    shot_profile = [path[0]]
+
+    if path[1]:
+        shot_profile.append("Touch Time: >6 seconds")
+    else:
+        shot_profile.append("Touch Time: 6+ seconds")
+
+    if path[2]:
+        shot_profile.append('0-5 Dribbles')
+    else:
+        shot_profile.append('6 + Dribbles')
+
+    for element in shot_profile:
+        print(f'- {element}')
 
 
 if __name__ == "__main__":
