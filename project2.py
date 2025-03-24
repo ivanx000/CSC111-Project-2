@@ -3,9 +3,12 @@ from __future__ import annotations
 
 import csv
 from typing import Any, Optional
-import graphviz
 import webbrowser
 import os
+
+import matplotlib.pyplot as plt
+import graphviz
+import mpld3
 
 from python_ta.contracts import check_contracts
 
@@ -67,6 +70,7 @@ class Tree:
         """Adds the leafs of our tree"""
         if not self._subtrees:
             self._subtrees.append(Tree(0, []))
+            self._subtrees.append(Tree(0, []))
         else:
             for subtree in self._subtrees:
                 subtree.add_leafs()
@@ -75,8 +79,11 @@ class Tree:
         """Mutates the leafs of our tree.
         In our case, it is the number shots the player made or missed of a specific shot type.
         """
-        if not data:
-            self._subtrees[0]._root += 1
+        if len(data) == 1:
+            if data[0]:
+                self._subtrees[0]._root += 1
+            else:
+                self._subtrees[1]._root += 1
         else:
             for subtree in self._subtrees:
                 temp = data[0]
@@ -109,36 +116,53 @@ class Tree:
 
         # Open in Chrome (make sure Chrome is the default or specify path)
         # chrome_path = "C:/Program Files/Google/Chrome/Application/chrome.exe %s"  # Windows example
-        chrome_path = "open -a Google\ Chrome %s"  # Mac example
+        chrome_path = "open -a Google\ Chrome %s"  # For Mac
         webbrowser.get(chrome_path).open(filepath)
 
-    def best_shot_percentage_helper(self) -> tuple[float, list]:
-        """Returns the maximum shot percentage and the path to achieve it.
+    def map_shot_percentages(self, path: list) -> dict[str, float]:
+        """Returns a dictionary mapping each shot percentage to its path in the tree."""
+        all_percentages = {}
+        if is_actual_int(self._subtrees[0]._root) and is_actual_int(self._subtrees[1]._root):
+            made_shots = self._subtrees[0]._root
+            missed_shots = self._subtrees[1]._root
+            total_shots = made_shots + missed_shots
 
-        - The percentage is calculated **pairwise** (1 & 2, 3 & 4, etc.).
-        - If multiple paths yield the same percentage, the **leftmost (odd) path is chosen**.
-        - Path is a list of node labels (e.g., ["3-pointer", True, False, True]).
+            percentage = round((made_shots / total_shots) * 100, 2)
+            all_percentages[identify_shot(path)] = percentage
+            return all_percentages
+        else:
+            for subtree in self._subtrees:
+                all_percentages.update(subtree.map_shot_percentages(path + [subtree._root]))
+
+            return all_percentages
+
+    def best_shot_percentage(self, path: list) -> tuple[float, list]:
+        """Returns the maximum shot percentage and its path.
+        If there is a tie-breaker, it returns the left-most shot
         """
-        if not self._subtrees:  # Leaf node case
-            return self._root, []  # Return the leaf value (either `made` or `miss`)
+        if is_actual_int(self._subtrees[0]._root) and is_actual_int(self._subtrees[1]._root):
+            made_shots = self._subtrees[0]._root
+            missed_shots = self._subtrees[1]._root
+            total_shots = made_shots + missed_shots
 
-        max_percentage = -1
-        best_path = []
+            percentage = round((made_shots / total_shots) * 100, 2)
+            return percentage, path
+        else:
+            best_percentage = -1
+            best_path = []
 
-        # Process subtrees in pairs (we assume they are structured correctly)
-        for i in range(0, len(self._subtrees), 2):
-            made, path_made = self._subtrees[i].best_shot_percentage_helper()
-            miss, path_miss = self._subtrees[i + 1].best_shot_percentage_helper()
+            for subtree in self._subtrees:
+                curr_percentage, curr_path = subtree.best_shot_percentage(path + [subtree._root])
+                if curr_percentage > best_percentage:
+                    best_percentage = curr_percentage
+                    best_path = curr_path
 
-            if miss != 0:  # Compute percentage
-                percentage = made / miss
-                if percentage > max_percentage:  # Update best if greater
-                    max_percentage = percentage
-                    best_path = [self._root] + path_made  # Store node label
-                elif percentage == max_percentage:  # Tie-breaker: favor leftmost
-                    best_path = [self._root] + path_made
+            return best_percentage, best_path
 
-        return max_percentage, best_path
+
+def is_actual_int(value: Any) -> bool:
+    """To fix isinstance(True, int) returning True"""
+    return isinstance(value, int) and not isinstance(value, bool)
 
 
 def modify_rows(row: list) -> list:
@@ -151,9 +175,9 @@ def modify_rows(row: list) -> list:
     else:
         shot_type = "Layup"
 
-    touch_time = (float(row[10]) < 6)
-    dribbles = (float(row[9]) < 6)
-    make_or_miss = (row[13] == 'made')
+    touch_time = float(row[10]) < 6
+    dribbles = float(row[9]) < 6
+    make_or_miss = row[13] == 'made'
 
     return [shot_type, touch_time, dribbles, make_or_miss]
 
@@ -166,7 +190,6 @@ def build_decision_tree(file: str, player: str) -> Tree:
         - file is the path to a csv file in the format of the provided animals.csv
     """
     tree = Tree(player, [Tree("3-pointer", []), Tree("Mid-Range", []), Tree("Layup", [])])
-    tree.add_tree_body()
     tree.add_tree_body()
     tree.add_tree_body()
     tree.add_leafs()
@@ -200,20 +223,36 @@ def read_names(file: str) -> set:
 def identify_shot(path: list) -> str:
     """Identifies the type of shot the player made"""
 
-    shot_profile = [path[0]]
+    shot_type = path[0]
 
     if path[1]:
-        shot_profile.append("Touch Time: >6 seconds")
+        shot_type += ", Touch Time: >6 seconds"
     else:
-        shot_profile.append("Touch Time: 6+ seconds")
+        shot_type += ", Touch Time: 6+ seconds"
 
     if path[2]:
-        shot_profile.append('0-5 Dribbles')
+        shot_type += ", 0-5 Dribbles."
     else:
-        shot_profile.append('6 + Dribbles')
+        shot_type += ", 6+ Dribbles."
 
-    for element in shot_profile:
-        print(f'- {element}')
+    return shot_type
+
+
+def display_pie_chart(data: dict[str, float], player_name: str) -> None:
+    """Displays a pie chart of all the shot percentages in a web browser."""
+    labels = list(data.keys())
+    sizes = list(data.values())
+
+    cmap = plt.get_cmap("tab10")  # Get the colormap
+    colors = [cmap(i / len(labels)) for i in range(len(labels))]  # Generate distinct colors
+
+    # Create pie chart
+    ax = plt.subplots(figsize=(6, 6))[1]
+    ax.pie(sizes, labels=labels, autopct='%1.1f%%', colors=colors, startangle=140)
+    ax.set_title(f"{player_name} Shot Distribution")
+
+    # Display the pie chart in the browser using mpld3
+    mpld3.show()
 
 
 if __name__ == "__main__":
@@ -237,4 +276,10 @@ if __name__ == "__main__":
         name = input("\nEnter a different player: ").lower().strip()
 
     my_tree = build_decision_tree("shot_logs[1].csv", name)
+
+    # Visualize using graphviz
     my_tree.visualize(name)
+
+    shot_percentages = my_tree.map_shot_percentages([])
+    # Visualize using matplotlib
+    display_pie_chart(shot_percentages, name)

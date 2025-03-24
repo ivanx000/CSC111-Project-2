@@ -1,1 +1,16 @@
+pip
+python get-pip.py # For Windows
+python3 -m ensurepip --upgrade # For macOS/Linux
+
 graphviz
+pip install graphviz # For Windows
+brew install graphviz # For macOS/Linux
+
+matplotlib
+To install, run this command in your terminal or command prompt
+python -m pip install matplotlib # For Windows
+python3 -m pip install matplotlib # For macOS/Linux
+
+mpld3
+python -m pip install mpld3 # For Windows
+python3 -m pip install mpld3 # For macOS/Linux
