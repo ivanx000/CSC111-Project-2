@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import csv
+import random
 from typing import Any, Optional
 import webbrowser
 import os
@@ -9,6 +10,7 @@ import os
 import matplotlib.pyplot as plt
 import graphviz
 import mpld3
+
 
 from python_ta.contracts import check_contracts
 
@@ -115,7 +117,7 @@ class Tree:
         dot.render(filename, format='png', cleanup=True)
 
         # Open in Chrome (make sure Chrome is the default or specify path)
-        # chrome_path = "C:/Program Files/Google/Chrome/Application/chrome.exe %s"  # Windows example
+        # chrome_path = "C:/Program Files/Google/Chrome/Application/chrome.exe %s"  # For Windows
         chrome_path = "open -a Google\ Chrome %s"  # For Mac
         webbrowser.get(chrome_path).open(filepath)
 
@@ -139,6 +141,15 @@ class Tree:
                 all_percentages.update(subtree.map_shot_percentages(path + [subtree._root]))
 
             return all_percentages
+
+    def map_best_shot_percentages(self) -> dict[str, tuple]:
+        """Maps each shot to its best percentage"""
+        all_best_percentages = {}
+        for subtree in self._subtrees:
+            best_percentage, best_path = subtree.best_shot_percentage([subtree._root])
+            all_best_percentages[subtree._root] = (best_percentage, identify_shot(best_path))
+
+        return all_best_percentages
 
     def best_shot_percentage(self, path: list) -> tuple[float, list]:
         """Returns the maximum shot percentage and its path.
@@ -251,12 +262,19 @@ def display_pie_chart(data: dict[str, float], player_name: str) -> None:
     labels = list(data.keys())
     sizes = list(data.values())
 
-    cmap = plt.get_cmap("tab10")  # Get the colormap
-    colors = [cmap(i / len(labels)) for i in range(len(labels))]  # Generate distinct colors
+    colours = [
+        "#FF5733", "#FFBD33", "#DBFF33", "#75FF33", "#33FF57",
+        "#33FFBD", "#33DBFF", "#3375FF", "#5733FF", "#BD33FF",
+        "#FF33A8", "#FF3385", "#FF3366", "#FF6633", "#FF9933",
+        "#FFFF33", "#A8FF33", "#85FF33", "#66FF33", "#33FF66",
+        "#33FFA8", "#33FFFF", "#33A8FF", "#3385FF", "#3366FF"
+    ]
+    random_number = random.randint(0, 13)
+    all_colours = colours[random_number:random_number + len(labels)]
 
     # Create pie chart
     ax = plt.subplots(figsize=(6, 6))[1]
-    ax.pie(sizes, labels=labels, autopct='%1.1f%%', colors=colors, startangle=140)
+    ax.pie(sizes, labels=labels, autopct='%1.1f%%', colors=all_colours, startangle=140)
     ax.set_title(f"{player_name.title()}'s Shot Distribution")
 
     # Display the pie chart in the browser using mpld3
@@ -288,6 +306,6 @@ if __name__ == "__main__":
     # Visualize using graphviz
     my_tree.visualize(name)
 
-    shot_percentages = my_tree.map_shot_percentages([])
-    # Visualize using matplotlib
-    display_pie_chart(shot_percentages, name)
+    # shot_percentages = my_tree.map_shot_percentages([])
+    # # Visualize using matplotlib
+    # display_pie_chart(shot_percentages, name)
