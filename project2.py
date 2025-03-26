@@ -249,7 +249,7 @@ def display_pie_chart(data: dict[str, float], player_name: str) -> None:
     # Create pie chart
     ax = plt.subplots(figsize=(6, 6))[1]
     ax.pie(sizes, labels=labels, autopct='%1.1f%%', colors=colors, startangle=140)
-    ax.set_title(f"{player_name} Shot Distribution")
+    ax.set_title(f"{player_name.title()}'s Shot Distribution")
 
     # Display the pie chart in the browser using mpld3
     mpld3.show()
