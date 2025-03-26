@@ -127,7 +127,11 @@ class Tree:
             missed_shots = self._subtrees[1]._root
             total_shots = made_shots + missed_shots
 
-            percentage = round((made_shots / total_shots) * 100, 2)
+            if total_shots == 0:
+                percentage = 0
+            else:
+                percentage = round((made_shots / total_shots) * 100, 2)
+
             all_percentages[identify_shot(path)] = percentage
             return all_percentages
         else:
@@ -145,7 +149,11 @@ class Tree:
             missed_shots = self._subtrees[1]._root
             total_shots = made_shots + missed_shots
 
-            percentage = round((made_shots / total_shots) * 100, 2)
+            if total_shots == 0:
+                percentage = 0
+            else:
+                percentage = round((made_shots / total_shots) * 100, 2)
+
             return percentage, path
         else:
             best_percentage = -1
