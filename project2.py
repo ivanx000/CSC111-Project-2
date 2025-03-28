@@ -306,6 +306,6 @@ if __name__ == "__main__":
     # Visualize using graphviz
     my_tree.visualize(name)
 
-    # shot_percentages = my_tree.map_shot_percentages([])
-    # # Visualize using matplotlib
-    # display_pie_chart(shot_percentages, name)
+    shot_percentages = my_tree.map_shot_percentages([])
+    # Visualize using matplotlib
+    display_pie_chart(shot_percentages, name)
