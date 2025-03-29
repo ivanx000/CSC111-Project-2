@@ -1,19 +1,36 @@
-pip
+# Required libraries
+matplotlib
+graphviz
+mpld3
+
+# pip and Hombrew are just used to download the other libraries
+# Download these accordingly in order
+
+1. pip
 To install, run this command in your terminal or command prompt
 python get-pip.py # For Windows
 python3 -m ensurepip --upgrade # For macOS/Linux
 
-graphviz
+2. Hombrew # macOS only
+To install, run this command in your terminal or command prompt
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" # For macOS/Linux
+
+3. graphviz
 To install, run this command in your terminal or command prompt
 pip install graphviz # For Windows
+An additional step for windows only, You also need the Graphviz system package for rendering. # For Windows
+Download and install it from the official website: https://graphviz.org/download/ # For Windows
+Add Graphviz to your system’s PATH to make it accessible: # For Windows
+setx PATH "%PATH%;C:\Program Files\Graphviz\bin" # For Windows
+
 brew install graphviz # For macOS/Linux
 
-matplotlib
+4. matplotlib
 To install, run this command in your terminal or command prompt
 python -m pip install matplotlib # For Windows
 python3 -m pip install matplotlib # For macOS/Linux
 
-mpld3
+5. mpld3
 To install, run this command in your terminal or command prompt
 python -m pip install mpld3 # For Windows
 python3 -m pip install mpld3 # For macOS/Linux
