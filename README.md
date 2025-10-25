@@ -38,6 +38,7 @@ Make sure you have Python 3.10+ installed, then run:
 
 pip install -r requirements.txt
 
+
 If you don’t have a requirements.txt file yet, create one with the following contents:
 
 graphviz
@@ -45,9 +46,11 @@ matplotlib
 mpld3
 python-ta
 
+
 ⚠️ macOS users: You may need to install Graphviz separately:
 
 brew install graphviz
+
 
 Windows users: Download Graphviz from graphviz.org/download
  and add it to your PATH.
@@ -59,7 +62,6 @@ Make sure the file shot_logs[1].csv is in the same directory as your script.
 Run the main program:
 
 python tree_analyzer.py
-
 
 When prompted, enter a player’s full name (e.g., LeBron James, Stephen Curry).
 
@@ -87,12 +89,14 @@ Decision Tree: Displays shooting outcomes as a hierarchical tree.
 Pie Chart: Interactive browser-based chart (via mpld3).
 
 🧩 Key Functions
+
 Function	Description
 build_decision_tree(file, player)	Builds a recursive tree from shot log data
 edit_leafs(data)	Updates made/missed shot counts for each condition
 map_shot_percentages()	Calculates shot success percentages
 visualize()	Generates a .png decision tree graph
 display_pie_chart()	Creates an interactive HTML pie chart visualization
+
 🧰 Technologies Used
 
 Python 3.10+
